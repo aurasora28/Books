@@ -33,6 +33,7 @@ const ProductList = ({ onClick }) => {
 
   useEffect(() => {
     dispatch(fetchProducts());
+    console.log("hola")
   }, [dispatch]);
 
   const getVisibleProduct = (products, sortBy, filters, search) => {
