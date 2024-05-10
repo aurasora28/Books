@@ -129,6 +129,7 @@ export const fetchProducts = () => async (dispatch) => {
   try {
     const response = await axios.get(`${API_URL}`);
     dispatch(getProducts(response.data));
+    console.log(response.data);
   } catch (error) {
     dispatch(hasError(error));
   }

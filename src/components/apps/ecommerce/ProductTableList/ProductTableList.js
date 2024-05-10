@@ -30,8 +30,10 @@ import { fetchProducts } from 'src/store/apps/eCommerce/EcommerceSlice';
 import CustomCheckbox from '../../../forms/theme-elements/CustomCheckbox';
 import CustomSwitch from '../../../forms/theme-elements/CustomSwitch';
 import { IconDotsVertical, IconFilter, IconSearch, IconTrash } from '@tabler/icons';
+import { getBooks } from './store/ProductSlice';
 
 function descendingComparator(a, b, orderBy) {
+
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -96,6 +98,8 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+
+
 
   return (
     <TableHead>
@@ -213,6 +217,9 @@ const ProductTableList = () => {
   const dispatch = useDispatch();
   //Fetch Products
   React.useEffect(() => {
+    dispatch(getBooks()).then((resp) => {
+      console.log(resp)
+    });
     dispatch(fetchProducts());
   }, [dispatch]);
 

@@ -151,24 +151,6 @@ const Customizer = () => {
             {/* ------------------------------------------- */}
             {/* ------------ RTL theme setting -------------*/}
             {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
-              Theme Direction
-            </Typography>
-            <Stack direction={'row'} gap={2} my={2}>
-              <StyledBox onClick={() => dispatch(setDir('ltr'))} display="flex" gap={1}>
-                <SwipeLeftAltTwoToneIcon
-                  color={customizer.activeDir === 'ltr' ? 'primary' : 'inherit'}
-                />{' '}
-                LTR
-              </StyledBox>
-              <StyledBox onClick={() => dispatch(setDir('rtl'))} display="flex" gap={1}>
-                <SwipeRightAltTwoToneIcon
-                  color={customizer.activeDir === 'rtl' ? 'primary' : 'inherit'}
-                />{' '}
-                RTL
-              </StyledBox>
-            </Stack>
-
             <Box pt={3} />
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
@@ -201,47 +183,6 @@ const Customizer = () => {
                 </Grid>
               ))}
             </Grid>
-            <Box pt={4} />
-            {/* ------------------------------------------- */}
-            {/* ------------ Layout Horizontal / Vertical ------------- */}
-            {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
-              Layout Type
-            </Typography>
-            <Stack direction={'row'} gap={2} my={2}>
-              <StyledBox onClick={() => dispatch(toggleHorizontal(false))} display="flex" gap={1}>
-                <ViewComfyTwoTone
-                  color={customizer.isHorizontal === false ? 'primary' : 'inherit'}
-                />
-                Vertical
-              </StyledBox>
-              <StyledBox onClick={() => dispatch(toggleHorizontal(true))} display="flex" gap={1}>
-                <PaddingTwoTone color={customizer.isHorizontal === true ? 'primary' : 'inherit'} />
-                Horizontal
-              </StyledBox>
-            </Stack>
-            <Box pt={4} />
-            {/* ------------------------------------------- */}
-            {/* ------------ Layout Boxed / Full ------------- */}
-            {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
-              Container Option
-            </Typography>
-            <Stack direction={'row'} gap={2} my={2}>
-              <StyledBox onClick={() => dispatch(toggleLayout('boxed'))} display="flex" gap={1}>
-                <CallToActionTwoToneIcon
-                  color={customizer.isLayout === 'boxed' ? 'primary' : 'inherit'}
-                />
-                Boxed
-              </StyledBox>
-              <StyledBox onClick={() => dispatch(toggleLayout('full'))} display="flex" gap={1}>
-                <AspectRatioTwoToneIcon
-                  color={customizer.isLayout === 'full' ? 'primary' : 'inherit'}
-                />
-                Full
-              </StyledBox>
-            </Stack>
-            <Box pt={4} />
             {/* ------------------------------------------- */}
             {/* ------------ Sidebar Color setting ------------- */}
             {/* ------------------------------------------- */}
@@ -249,56 +190,7 @@ const Customizer = () => {
             {/* ------------------------------------------- */}
             {/* ------------ Theme Color setting ------------- */}
             {/* ------------------------------------------- */}
-            {customizer.isHorizontal ? (
-              ''
-            ) : (
-              <>
-                <Typography variant="h6" gutterBottom>
-                  Sidebar Type
-                </Typography>
-                <Stack direction={'row'} gap={2} my={2}>
-                  <StyledBox onClick={() => dispatch(toggleSidebar())} display="flex" gap={1}>
-                    <WebAssetTwoToneIcon color={!customizer.isCollapse ? 'primary' : 'inherit'} />
-                    Full
-                  </StyledBox>
-                  <StyledBox onClick={() => dispatch(toggleSidebar())} display="flex" gap={1}>
-                    <ViewSidebarTwoToneIcon color={customizer.isCollapse ? 'primary' : 'inherit'} />
-                    mini
-                  </StyledBox>
-                </Stack>
-              </>
-            )}
-            <Box pt={4} />
-            <Typography variant="h6" gutterBottom>
-              Card With
-            </Typography>
-            <Stack direction={'row'} gap={2} my={2}>
-              <StyledBox onClick={() => dispatch(setCardShadow(false))} display="flex" gap={1}>
-                <BorderOuter color={!customizer.isCardShadow ? 'primary' : 'inherit'} />
-                Border
-              </StyledBox>
-              <StyledBox onClick={() => dispatch(setCardShadow(true))} display="flex" gap={1}>
-                <CallToActionTwoToneIcon color={customizer.isCardShadow ? 'primary' : 'inherit'} />
-                Shadow
-              </StyledBox>
-            </Stack>
-            <Box pt={4} />
-            {/* ------------------------------------------- */}
-            {/* ------------ Theme Color setting ------------- */}
-            {/* ------------------------------------------- */}
-            <Typography variant="h6" gutterBottom>
-              Theme Border Radius
-            </Typography>
-
-            <Slider
-              size="small"
-              value={customizer.borderRadius}
-              aria-label="Small"
-              min={4}
-              max={24}
-              onChange={(event) => dispatch(setBorderRadius(event.target.value))}
-              valueLabelDisplay="auto"
-            />
+            
           </Box>
         </Scrollbar>
       </Drawer>

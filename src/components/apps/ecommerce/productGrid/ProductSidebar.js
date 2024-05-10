@@ -1,7 +1,6 @@
 import React from 'react';
 import { Drawer, useMediaQuery } from '@mui/material';
 
-import ProductFilter from './ProductFilter';
 
 const drawerWidth = 250;
 
@@ -24,7 +23,6 @@ const ProductSidebar = ({ isMobileSidebarOpen, onSidebarClose }) => {
       {/* ------------------------------------------- */}
       {/* Filter Sidebar */}
       {/* ------------------------------------------- */}
-      <ProductFilter />
     </Drawer>
   );
 };

@@ -9,7 +9,6 @@ import { IconMenu2 } from '@tabler/icons';
 import Notifications from './Notifications';
 import Profile from './Profile';
 import Cart from './Cart';
-import Search from './Search';
 import Language from './Language';
 import Navigation from './Navigation';
 import MobileRightSidebar from './MobileRightSidebar';
@@ -52,7 +51,6 @@ const Header = () => {
         {/* ------------------------------------------- */}
         {/* Search Dropdown */}
         {/* ------------------------------------------- */}
-        <Search />
         {lgUp ? (
           <>
             <Navigation />
@@ -66,11 +64,9 @@ const Header = () => {
           {/* ------------------------------------------- */}
           {/* Ecommerce Dropdown */}
           {/* ------------------------------------------- */}
-          <Cart />
           {/* ------------------------------------------- */}
           {/* End Ecommerce Dropdown */}
           {/* ------------------------------------------- */}
-          <Notifications />
            {/* ------------------------------------------- */}
           {/* Toggle Right Sidebar for mobile */}
           {/* ------------------------------------------- */}
