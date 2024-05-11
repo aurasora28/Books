@@ -13,19 +13,25 @@ import {
   Divider,
   Stack,
   useTheme,
+  FormLabel,
+  TextField,
   Fab,
   ButtonGroup,
 } from '@mui/material';
 
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchProducts, addToCart } from '../../../../store/apps/eCommerce/EcommerceSlice';
 import { IconCheck, IconMinus, IconPlus } from '@tabler/icons';
-import AlertCart from '../productCart/AlertCart';
+import { fetchProducts, addNewComment } from '../../../../store/apps/eCommerce/EcommerceSlice';
 
 const ProductDetail = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const Id = useParams();
+  console.log(Id)
+  const [values, setValues] = React.useState({
+    idBook: Id.id,
+    comment: {name: 'Anónimo', dateCreated: new Date(), comment: ''},
+});
 
   // Get Product
   useEffect(() => {
@@ -33,29 +39,24 @@ const ProductDetail = () => {
   }, [dispatch]);
 
   // Get Products
-  const product = useSelector((state) => state.ecommerceReducer.products[Id.id - 1]);
+  const products = useSelector((state) => state.ecommerceReducer.products);
+  const product = products.find((product) => product.idBook === parseInt(Id.id));
 
-  /// select colors on click
-  const [scolor, setScolor] = useState(product ? product.colors[0] : '');
-  const setColor = (e) => {
-    setScolor(e);
-  };
-
-  //set qty
-  const [count, setCount] = useState(1);
-
-  // for alert when added something to cart
-  const [cartalert, setCartalert] = React.useState(false);
-
-  const handleClick = () => {
-    setCartalert(true);
-  };
-
-  const handleClose = (reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setCartalert(false);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const commentString = JSON.stringify(values.comment); // Convertir el objeto comment a una cadena JSON
+    const data = { idBook: values.idBook, comment: commentString }; // Construir el objeto de datos para enviar al servidor
+    console.log(data)
+    dispatch(
+      addNewComment(
+        data
+      ),
+    );
+    setValues({
+      idBook: Id,
+       comment: {name: 'Anónimo', dateCreated: new Date(), comment: ''},
+    })
+    dispatch(fetchProducts());
   };
 
   return (
@@ -66,10 +67,14 @@ const ProductDetail = () => {
             {/* ------------------------------------------- */}
             {/* Badge and category */}
             {/* ------------------------------------------- */}
-            <Chip label="In Stock" color="success" size="small" />
-            <Typography color="textSecondary" variant="caption" ml={1} textTransform="capitalize">
-              {product.category}
+            <Typography color="textSecondary" variant="h6" ml={1} textTransform="capitalize">
+              {product.book}
             </Typography>
+            <Typography color="textSecondary" variant="caption" ml={1} mr={1} textTransform="capitalize">
+              {product.author}
+            </Typography>
+            <Chip label={product.year} color="default" size="small" />
+
           </Box>
           {/* ------------------------------------------- */}
           {/* Title and description */}
@@ -77,121 +82,46 @@ const ProductDetail = () => {
           <Typography fontWeight="600" variant="h4" mt={1}>
             {product.title}
           </Typography>
-          <Typography variant="subtitle2" mt={1} color={theme.palette.text.secondary}>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ex arcu, tincidunt bibendum
-            felis.
+          <Typography variant="subtitle2" mt={1} mb={2} color={theme.palette.text.secondary}>
+            {product.description}
           </Typography>
-          {/* ------------------------------------------- */}
-          {/* Price */}
-          {/* ------------------------------------------- */}
-          <Typography mt={2} variant="h4" fontWeight={600}>
-            <Box
-              component={'small'}
-              color={theme.palette.text.secondary}
-              sx={{ textDecoration: 'line-through' }}
+
+
+          <Divider />
+
+          <Typography color="textSecondary" variant="body1" mt={2} mb={2}>
+            Comments:
+          </Typography>
+
+          {console.log(product.comments)}
+
+          <FormLabel >New comment (Max length 100)</FormLabel>
+          <TextField
+            id="description"
+            size="small"
+            multiline
+            rows="4"
+            variant="outlined"
+            fullWidth
+            value={values.comment.comment}
+            onChange={(e) => setValues({ ...values, comment: { ...values.comment, comment: e.target.value } })}
+            inputProps={{ maxLength: 100 }}
+          />
+          <Box textAlign="end" mt={1}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mr: 1 }}
+              type="submit"
+              disabled={values.comment.length === 0}
+              onClick={handleSubmit}
             >
-              ${product.salesPrice}
-            </Box>{' '}
-            ${product.price}
-          </Typography>
-          {/* ------------------------------------------- */}
-          {/* Ratings */}
-          {/* ------------------------------------------- */}
-          <Stack direction={'row'} alignItems="center" gap="10px" mt={2} pb={3}>
-            <Rating name="simple-controlled" size="small" value={product.rating} readOnly />
-            <Link to="/" color="inherit">
-              (236 reviews)
-            </Link>
-          </Stack>
-          <Divider />
-          {/* ------------------------------------------- */}
-          {/* Colors */}
-          {/* ------------------------------------------- */}
-          <Stack py={4} direction="row" alignItems="center">
-            <Typography variant="h6" mr={1}>
-              Colors:
-            </Typography>
-            <Box>
-              {product.colors.map((color) => (
-                <Fab
-                  color="primary"
-                  sx={{
-                    transition: '0.1s ease-in',
-                    scale: scolor === color ? '0.9' : '0.7',
-                    backgroundColor: `${color}`,
-                    '&:hover': {
-                      backgroundColor: `${color}`,
-                      opacity: 0.7,
-                    },
-                  }}
-                  size="small"
-                  key={color}
-                  onClick={() => setColor(color)}
-                >
-                  {scolor === color ? <IconCheck size="1.1rem" /> : ''}
-                </Fab>
-              ))}
-            </Box>
-          </Stack>
-          {/* ------------------------------------------- */}
-          {/* Qty */}
-          {/* ------------------------------------------- */}
-          <Stack direction="row" alignItems="center" pb={5}>
-            <Typography variant="h6" mr={4}>
-              QTY:
-            </Typography>
-            <Box>
-              <ButtonGroup size="small" color="secondary" aria-label="small button group">
-                <Button key="one" onClick={() => setCount(count < 2 ? count : count - 1)}>
-                  <IconMinus size="1.1rem" />
-                </Button>
-                <Button key="two">{count}</Button>
-                <Button key="three" onClick={() => setCount(count + 1)}>
-                  <IconPlus size="1.1rem" />
-                </Button>
-              </ButtonGroup>
-            </Box>
-          </Stack>
-          <Divider />
-          {/* ------------------------------------------- */}
-          {/* Buttons */}
-          {/* ------------------------------------------- */}
-          <Grid container spacing={2} mt={3}>
-            <Grid item xs={12} lg={4} md={6}>
-              <Button
-                color="primary"
-                size="large"
-                fullWidth
-                component={Link}
-                variant="contained"
-                to="/apps/ecommerce/eco-checkout"
-                onClick={() => dispatch(addToCart(product))}
-              >
-                Buy Now
-              </Button>
-            </Grid>
-            <Grid item xs={12} lg={4} md={6}>
-              <Button
-                color="error"
-                size="large"
-                fullWidth
-                variant="contained"
-                onClick={() => dispatch(addToCart(product)) && handleClick()}
-              >
-                Add to Cart
-              </Button>
-            </Grid>
-          </Grid>
-          <Typography color="textSecondary" variant="body1" mt={4}>
-            Dispatched in 2-3 weeks
-          </Typography>
-          <Link to="/" color="inherit">
-            Why the longer time for delivery?
-          </Link>
-          {/* ------------------------------------------- */}
-          {/* Alert When click on add to cart */}
-          {/* ------------------------------------------- */}
-          <AlertCart handleClose={handleClose} openCartAlert={cartalert} />
+              Submit
+            </Button>
+            <Button variant="contained" color="error" onClick={() => setComment('')}>
+              Cancel
+            </Button>
+          </Box>
         </>
       ) : (
         'No product'

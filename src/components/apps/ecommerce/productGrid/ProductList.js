@@ -18,13 +18,10 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   fetchProducts,
-  addToCart,
   filterReset,
 } from '../../../../store/apps/eCommerce/EcommerceSlice';
 import ProductSearch from './ProductSearch';
 import { IconBasket, IconMenu2 } from '@tabler/icons';
-import AlertCart from '../productCart/AlertCart';
-import emptyCart from 'src/assets/images/products/empty-shopping-cart.svg';
 import BlankCard from '../../../shared/BlankCard';
 
 const ProductList = ({ onClick }) => {
@@ -33,54 +30,28 @@ const ProductList = ({ onClick }) => {
 
   useEffect(() => {
     dispatch(fetchProducts());
-    console.log("hola")
   }, [dispatch]);
 
-  const getVisibleProduct = (products, sortBy, filters, search) => {
+  const getVisibleProduct = (products, sortBy, search) => {
     // SORT BY
     if (sortBy === 'newest') {
       products = orderBy(products, ['created'], ['desc']);
     }
-    if (sortBy === 'priceDesc') {
-      products = orderBy(products, ['price'], ['desc']);
+    if (sortBy === 'nameDesc') {
+      products = orderBy(products, ['name'], ['desc']);
     }
-    if (sortBy === 'priceAsc') {
-      products = orderBy(products, ['price'], ['asc']);
-    }
-    if (sortBy === 'discount') {
-      products = orderBy(products, ['discount'], ['desc']);
+    if (sortBy === 'nameAsc') {
+      products = orderBy(products, ['name'], ['asc']);
     }
 
-    // FILTER PRODUCTS
-    if (filters.category !== 'All') {
-      //products = filter(products, (_product) => includes(_product.category, filters.category));
-      products = products.filter((_product) => _product.category.includes(filters.category));
-    }
-
-    //FILTER PRODUCTS BY GENDER
-    if (filters.gender !== 'All') {
-      products = filter(products, (_product) => _product.gender === filters.gender);
-    }
-
-    //FILTER PRODUCTS BY GENDER
-    if (filters.color !== 'All') {
-      products = products.filter((_product) => _product.colors.includes(filters.color));
-    }
 
     //FILTER PRODUCTS BY Search
     if (search !== '') {
       products = products.filter((_product) =>
-        _product.title.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
+        _product.book.toLocaleLowerCase().includes(search.toLocaleLowerCase()),
       );
     }
 
-    //FILTER PRODUCTS BY Price
-    if (filters.price !== 'All') {
-      const minMax = filters.price ? filters.price.split('-') : '';
-      products = products.filter((_product) =>
-        filters.price ? _product.price >= minMax[0] && _product.price <= minMax[1] : true,
-      );
-    }
 
     return products;
   };
@@ -89,24 +60,10 @@ const ProductList = ({ onClick }) => {
     getVisibleProduct(
       state.ecommerceReducer.products,
       state.ecommerceReducer.sortBy,
-      state.ecommerceReducer.filters,
       state.ecommerceReducer.productSearch,
     ),
   );
 
-  // for alert when added something to cart
-  const [cartalert, setCartalert] = React.useState(false);
-
-  const handleClick = () => {
-    setCartalert(true);
-  };
-
-  const handleClose = (reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setCartalert(false);
-  };
 
   const [isLoading, setLoading] = React.useState(true);
 
@@ -150,15 +107,15 @@ const ProductList = ({ onClick }) => {
                 sm={6}
                 display="flex"
                 alignItems="stretch"
-                key={product.id}
+                key={product.idBook}
               >
                 {/* ------------------------------------------- */}
                 {/* Product Card */}
                 {/* ------------------------------------------- */}
 
                 <BlankCard className="hoverCard">
-                  <Typography component={Link} to={`/apps/ecommerce/detail/${product.id}`}>
-                    {isLoading || !product.photo ? (
+                  <Typography component={Link} to={`/apps/ecommerce/detail/${product.idBook}`}>
+                    {isLoading || !product.image ? (
                       <>
                         <Skeleton variant="square" width={270} height={300}></Skeleton>
                       </>
@@ -166,23 +123,13 @@ const ProductList = ({ onClick }) => {
                       <CardMedia
                         component="img"
                         width="100%"
-                        image={product.photo}
+                        image={product.image}
                         alt="products"
                       />
                     )}
                   </Typography>
-                  <Tooltip title="Add To Cart">
-                    <Fab
-                      size="small"
-                      color="primary"
-                      onClick={() => dispatch(addToCart(product)) && handleClick()}
-                      sx={{ bottom: '75px', right: '15px', position: 'absolute' }}
-                    >
-                      <IconBasket size="16" />
-                    </Fab>
-                  </Tooltip>
                   <CardContent sx={{ p: 3, pt: 2 }}>
-                    <Typography variant="h6">{product.title}</Typography>
+                    <Typography variant="h6">{product.book}</Typography>
                     <Stack
                       direction="row"
                       alignItems="center"
@@ -190,21 +137,13 @@ const ProductList = ({ onClick }) => {
                       mt={1}
                     >
                       <Stack direction="row" alignItems="center">
-                        <Typography variant="h6">${product.price}</Typography>
-                        <Typography
-                          color="textSecondary"
-                          ml={1}
-                          sx={{ textDecoration: 'line-through' }}
-                        >
-                          ${product.salesPrice}
-                        </Typography>
+                        <Typography variant="body1">{product.author}</Typography>
                       </Stack>
-                      <Rating name="read-only" size="small" value={product.rating} readOnly />
+                      <Typography variant="body1">{product.year}</Typography>
                     </Stack>
                   </CardContent>
                 </BlankCard>
 
-                <AlertCart handleClose={handleClose} openCartAlert={cartalert} />
                 {/* ------------------------------------------- */}
                 {/* Product Card */}
                 {/* ------------------------------------------- */}
@@ -215,10 +154,9 @@ const ProductList = ({ onClick }) => {
           <>
             <Grid item xs={12} lg={12} md={12} sm={12}>
               <Box textAlign="center" mt={6}>
-                <img src={emptyCart} alt="cart" width="200px" />
-                <Typography variant="h2">There is no Product</Typography>
+                <Typography variant="h2">There is no Book</Typography>
                 <Typography variant="h6" mb={3}>
-                  The Product you are searching is no longer available.
+                  The Book you are searching is no longer available.
                 </Typography>
                 <Button variant="contained" onClick={() => dispatch(filterReset())}>
                   Try Again
