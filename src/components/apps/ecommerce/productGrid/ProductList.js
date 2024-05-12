@@ -125,6 +125,7 @@ const ProductList = ({ onClick }) => {
                         width="100%"
                         image={product.image}
                         alt="products"
+                        style={{height: 300}}
                       />
                     )}
                   </Typography>
