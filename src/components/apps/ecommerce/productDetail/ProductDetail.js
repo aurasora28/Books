@@ -27,11 +27,10 @@ const ProductDetail = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const Id = useParams();
-  console.log(Id)
   const [values, setValues] = React.useState({
     idBook: Id.id,
-    comment: {name: 'Anónimo', dateCreated: new Date(), comment: ''},
-});
+    comment: { name: 'Anónimo', dateCreated: new Date(), comment: '' },
+  });
 
   // Get Product
   useEffect(() => {
@@ -44,19 +43,25 @@ const ProductDetail = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const commentString = JSON.stringify(values.comment); // Convertir el objeto comment a una cadena JSON
-    const data = { idBook: values.idBook, comment: commentString }; // Construir el objeto de datos para enviar al servidor
-    console.log(data)
-    dispatch(
-      addNewComment(
-        data
-      ),
-    );
-    setValues({
-      idBook: Id,
-       comment: {name: 'Anónimo', dateCreated: new Date(), comment: ''},
-    })
-    dispatch(fetchProducts());
+    let commentArray = [];
+    let commentString = '';
+
+    if (product.comments === null) {
+      commentArray.push(values.comment);
+    } else {
+      commentArray = JSON.parse(product.comments);
+      commentArray.push(values.comment);
+    }
+    commentString = JSON.stringify(commentArray);
+    const data = {
+      idBook: parseInt(values.idBook),
+      comment: commentString
+    };
+    dispatch(addNewComment(data)).then(() => {
+      dispatch(fetchProducts());
+      setValues({ idBook: Id.id, comment: { name: 'Anónimo', dateCreated: new Date(), comment: '' } });
+    });
+
   };
 
   return (
@@ -93,32 +98,58 @@ const ProductDetail = () => {
             Comments:
           </Typography>
 
-          {console.log(product.comments)}
+          {product.comments !== null ?
+            <>
+              {JSON.parse(product.comments).map((comment, index) => (
 
-          <FormLabel >New comment (Max length 100)</FormLabel>
-          <TextField
-            id="description"
-            size="small"
-            multiline
-            rows="4"
-            variant="outlined"
-            fullWidth
-            value={values.comment.comment}
-            onChange={(e) => setValues({ ...values, comment: { ...values.comment, comment: e.target.value } })}
-            inputProps={{ maxLength: 100 }}
-          />
+                // Renderizar cada comentario aquí
+                <div key={index}>
+
+                  <Box display="flex" alignItems="center" mt={1} mb={1}>
+                    {/* ------------------------------------------- */}
+                    {/* Badge and category */}
+                    {/* ------------------------------------------- */}
+                    <Typography variant="body1" mr={1} fontWeight={600}>{comment.name} </Typography>
+                    <Typography variant="caption">{new Date(comment.dateCreated).toLocaleString()}</Typography>
+                  </Box>
+                  <Typography variant="body1">{comment.comment}</Typography>
+
+                </div>
+              ))}
+            </>
+            :
+            <Typography color="textSecondary" variant="body1" mt={2} mb={2}>
+              No Comments yet
+            </Typography>
+          }
+
+          <Box mt={3} mb={1}>
+
+            <FormLabel >New comment (Max length 100)</FormLabel>
+            <TextField
+              id="description"
+              size="small"
+              multiline
+              rows="4"
+              variant="outlined"
+              fullWidth
+              value={values.comment.comment}
+              onChange={(e) => setValues({ ...values, comment: { ...values.comment, comment: e.target.value } })}
+              inputProps={{ maxLength: 100 }}
+            />
+          </Box>
           <Box textAlign="end" mt={1}>
             <Button
               variant="contained"
               color="primary"
               sx={{ mr: 1 }}
               type="submit"
-              disabled={values.comment.length === 0}
+              disabled={values.comment.comment.length === 0}
               onClick={handleSubmit}
             >
               Submit
             </Button>
-            <Button variant="contained" color="error" onClick={() => setComment('')}>
+            <Button variant="contained" color="error" onClick={() => setComment('')} disabled={values.comment.comment.length === 0}>
               Cancel
             </Button>
           </Box>

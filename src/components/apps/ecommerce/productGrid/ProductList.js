@@ -35,13 +35,13 @@ const ProductList = ({ onClick }) => {
   const getVisibleProduct = (products, sortBy, search) => {
     // SORT BY
     if (sortBy === 'newest') {
-      products = orderBy(products, ['created'], ['desc']);
+      products = orderBy(products, ['idBook'], ['desc']);
     }
-    if (sortBy === 'nameDesc') {
-      products = orderBy(products, ['name'], ['desc']);
+    if (sortBy === 'bookDesc') {
+      products = orderBy(products, ['book'], ['desc']);
     }
-    if (sortBy === 'nameAsc') {
-      products = orderBy(products, ['name'], ['asc']);
+    if (sortBy === 'bookAsc') {
+      products = orderBy(products, ['book'], ['asc']);
     }
 
 
@@ -61,9 +61,10 @@ const ProductList = ({ onClick }) => {
       state.ecommerceReducer.products,
       state.ecommerceReducer.sortBy,
       state.ecommerceReducer.productSearch,
-    ),
+    )
   );
 
+  const products = useSelector((state) => state.ecommerceReducer.products);
 
   const [isLoading, setLoading] = React.useState(true);
 
@@ -112,7 +113,6 @@ const ProductList = ({ onClick }) => {
                 {/* ------------------------------------------- */}
                 {/* Product Card */}
                 {/* ------------------------------------------- */}
-
                 <BlankCard className="hoverCard">
                   <Typography component={Link} to={`/apps/ecommerce/detail/${product.idBook}`}>
                     {isLoading || !product.image ? (
@@ -158,7 +158,7 @@ const ProductList = ({ onClick }) => {
                 <Typography variant="h6" mb={3}>
                   The Book you are searching is no longer available.
                 </Typography>
-                <Button variant="contained" onClick={() => dispatch(filterReset())}>
+                <Button variant="contained" onClick={() => dispatch(fetchProducts())}>
                   Try Again
                 </Button>
               </Box>

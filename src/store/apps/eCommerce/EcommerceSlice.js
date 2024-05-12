@@ -1,14 +1,26 @@
 import axios from '../../../utils/axios';
 import { filter, map } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const API_URL = '/api/data/eCommerce/ProductsData';
+
+export const fetchProducts = createAsyncThunk('Ruteo/GetDestinos', async () => {
+  try {
+    const response = await axios.post('http://localhost:8099/book/data', {});
+    const data = await response.data.data;
+    return data;
+  } catch (err) {
+    throw err;
+  }
+});
 
 const initialState = {
   products: [],
   productSearch: '',
   sortBy: 'newest',
-  error: ''
+  error: false,
+  isLoading: true
 };
 
 export const EcommerceSlice = createSlice({
@@ -18,10 +30,6 @@ export const EcommerceSlice = createSlice({
     // HAS ERROR
     hasError(state, action) {
       state.error = action.payload;
-    },
-    // GET PRODUCTS
-    getProducts: (state, action) => {
-      state.products = action.payload;
     },
     SearchProduct: (state, action) => {
       state.productSearch = action.payload;
@@ -36,67 +44,42 @@ export const EcommerceSlice = createSlice({
     //  FILTER Reset
     filterReset(state) {
       state.sortBy = 'newest';
-    }, 
-    addNewBookSuccess(state, action) {
-      state.products.push(action.payload);
-    },
-    addNewBookFailure(state, action) {
-      state.error = action.payload;
-    },
-    addNewCommentSuccess(state, action) {
-      state.products.push(action.payload);
-    },
-    addNewCommentFailure(state, action) {
-      state.error = action.payload;
     },
   },
+  extraReducers: {
+    [fetchProducts.fulfilled]: (state, action) => {
+      state.products = action.payload;
+    },
+    [fetchProducts.pending]: (state, action) => { state.error = false },
+    [fetchProducts.error]: (state, action) => { state.error = true }
+
+  }
 });
 export const {
   hasError,
-  getProducts,
   SearchProduct,
   setVisibilityFilter,
   sortByProducts,
   filterProducts,
   filterReset,
-  addNewBookSuccess, 
-  addNewBookFailure,
-  addNewCommentSuccess, 
-  addNewCommentFailure
-  
 } = EcommerceSlice.actions;
 
 export const addNewBook = (newBookData) => async (dispatch) => {
   try {
-    const response = await axios.post(`http://localhost:8099/book/create`, {title: newBookData.title,author: newBookData.author, year: newBookData.year, description: newBookData.description});
-
-   dispatch(addNewBookSuccess(response.data));
+    const response = await axios.post(`http://localhost:8099/book/create`, { title: newBookData.title, author: newBookData.author, year: newBookData.year, description: newBookData.description, image: newBookData.image });
   } catch (error) {
-    dispatch(addNewBookFailure(error.message));
+    throw error;
   }
 };
 
 export const addNewComment = (newCommentData) => async (dispatch) => {
   try {
-    console.log("COMENTAROS", newCommentData)
-    const response = await axios.post(`http://localhost:8099/book/updateComment`, {idBook: newCommentData.idBook, comments: newCommentData.comment});
-    console.log(response)
-   dispatch(addNewCommentSuccess(response.data));
+    const response = await axios.post(`http://localhost:8099/book/updateComment`, { idBook: newCommentData.idBook, comments: newCommentData.comment });
   } catch (error) {
-    dispatch(addNewCommentFailure(error.message));
+    throw error;
   }
 };
 
-export const fetchProducts = () => async (dispatch) => {
-  try {
-    //const response = await axios.get(`${API_URL}`);
-    const responseBooks = await axios.get(`http://localhost:8099/book/data`);
-
-    dispatch(getProducts(responseBooks.data.data));
-    console.log(responseBooks.data.data);
-  } catch (error) {
-    dispatch(hasError(error));
-  }
-};
 
 export default EcommerceSlice.reducer;
+

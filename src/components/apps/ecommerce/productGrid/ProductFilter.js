@@ -56,8 +56,8 @@ const ProductFilter = () => {
 
   const filterbySort = [
     { id: 1, value: 'newest', label: 'Newest', icon: IconAd2 },
-    { id: 2, value: 'nameDesc', label: 'Name: Desc', icon: IconSortAscending2 },
-    { id: 3, value: 'nameAsc', label: 'Name: Asc', icon: IconSortDescending2 },
+    { id: 2, value: 'bookDesc', label: 'Name: Desc', icon: IconSortAscending2 },
+    { id: 3, value: 'bookAsc', label: 'Name: Asc', icon: IconSortDescending2 },
   ];
 
   return (
